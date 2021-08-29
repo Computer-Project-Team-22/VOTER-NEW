@@ -1,0 +1,121 @@
+from tkinter import *
+import smtplib
+import random
+
+import pyttsx3
+
+root=Tk()
+root.title('                                                LOGIN TO VOTE')
+root.geometry('500x500')
+
+
+frame=LabelFrame(root,text='NAME(bold letters)',padx=100,pady=100 )
+frame.pack(padx=10,pady=10)
+
+
+
+f1=Frame(frame,borderwidth=7,bg="orange")
+f1.pack()
+
+name=Label(f1,text='ENTER YOUR NAME :')
+name.grid(row=0,column=0)
+
+f2=Frame(root,borderwidth=7,bg="orange")
+f2.pack()
+
+email=Label(f2,text='ENTER YOUR GMAIL ID :')
+email.grid(row=2,column=0) 
+
+
+emaile=Entry(f2)
+emaile.grid(row=2,column=1)
+
+namee=Entry(f1)
+namee.grid(row=0,column=1,columnspan=7)
+
+
+engine = pyttsx3.init()
+
+
+voices = engine.getProperty('voices')       
+engine.setProperty('voice', voices[0].id)
+
+rate = engine.getProperty('rate') 
+engine.setProperty('rate',120) 
+engine.say("ENTER YOUR USERNAME AND gmail id")
+
+engine.runAndWait()
+
+
+
+
+mailaddress=''
+
+
+def login():
+    global mailaddress
+    mailaddress=emaile.get()
+    print(mailaddress)
+    with smtplib.SMTP('smtp.gmail.com',587) as smtp :
+        smtp.ehlo()
+        smtp.starttls()
+        smtp.ehlo()
+        emailaddress='noel.python@gmail.com'
+        smtp.login(emailaddress,'24143307')
+        subject='HERE IS UR OTP FOR SCHOOL ELECTION.....do not forward this to anyone '
+        global otp
+        otp=random.randint(100000,999999)
+        
+        body=otp
+        msg=f'Subject: {subject}\n\n  {body}'
+        
+        smtp.sendmail(emailaddress,mailaddress, msg)
+    
+    engine.say('enter the otp')
+    engine.runAndWait()
+    root.destroy()
+   
+   
+
+loginbtn=Button(root,text="Login",command=login,bg="blue",fg="white",font=("arial",15,"bold"))
+loginbtn.pack()
+
+root.mainloop()
+
+root2=Tk()
+root2.geometry('500x500')
+
+frame2=LabelFrame(root2,text='OTP VERIFICATION',padx=100,pady=100 )
+frame2.pack(padx=10,pady=10)
+
+f3=Frame(frame2,borderwidth=7,bg="orange")
+f3.pack()
+
+a=Label(root2,text='you will recieve an OTP in your mail')
+a.pack()
+
+mylabel=Label(f3,text='ENTER OTP:')
+mylabel.grid(row=0,column=0)
+
+otp_entry=Entry(f3)
+otp_entry.grid(row=0,column=1)
+
+def click():
+    OTP=otp_entry.get()
+    if OTP==str(otp):
+        root2.destroy()
+        root3=Tk()
+        root3.mainloop()
+    else:
+        m=messagebox.showerror('verificationfailed','incorrect OTP')
+        engine.say('incorrect otp')
+        engine.runAndWait()
+        
+        
+mybutton=Button(root2,text='continue',command=click)
+mybutton.pack()
+
+root2.mainloop()
+
+
+engine.stop()
